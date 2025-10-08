@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaloyan Draganov</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span>Kaloyan Draganov</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#resume" class="nav-link">Resume</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="nav-social">
+                <a href="https://linkedin.com/in/kaloyan-draganov-081567155/" target="_blank" class="nav-social-link">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://github.com/kkdraganov" target="_blank" class="nav-social-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="mailto:kaloyan@draganov.com" class="nav-social-link">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-image">
+                    <img src="assets/Profile.jpg" alt="Kaloyan Draganov" class="profile-img">
+                    <div class="image-overlay"></div>
+                </div>
+                <div class="hero-text">
+                    <div class="hero-intro">
+                        <span class="greeting">— I'M KALOYAN (KAL) DRAGANOV.</span>
+                        <h1 class="hero-title">ROBOTICS ENGINEER</h1>
+                        <p class="hero-description">
+                            I'm a second-year Computer Engineering and Computer Science student at Northeastern University
+                            passionate about robotics, embedded systems, and automation. I'm seeking opportunities to
+                            turn innovative ideas into real-world prototypes and products.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="#resume" class="btn-primary">
+                                VIEW MY RESUME <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <a href="#contact" class="btn-secondary">
+                                GET IN TOUCH
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">About Me</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        I'm a second-year Computer Engineering and Computer Science student at Northeastern University
+                        with a passion for robotics, embedded systems, and automation. My academic journey has been
+                        driven by curiosity about how technology can solve real-world problems and improve people's lives.
+                    </p>
+                    <p>
+                        I'm particularly interested in the intersection of hardware and software, focusing on developing
+                        systems that bridge the digital and physical worlds. I'm actively seeking my first co-op
+                        opportunity in automation, robotics, or embedded systems where I can apply my skills to create
+                        meaningful prototypes and products.
+                    </p>
+                    <div class="skills">
+                        <h3>Technical Skills</h3>
+                        <div class="skills-grid">
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">C++</span>
+                            <span class="skill-tag">Java</span>
+                            <span class="skill-tag">ROS</span>
+                            <span class="skill-tag">MATLAB</span>
+                            <span class="skill-tag">Linux</span>
+                            <span class="skill-tag">FPGAs</span>
+                            <span class="skill-tag">SOLIDWORKS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resume Section -->
+    <section id="resume" class="resume-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">My Resume</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="resume-content">
+                <div class="resume-controls">
+                    <a href="assets/Kaloyan Draganov Resume.pdf" download class="btn-download">
+                        <i class="fas fa-download"></i> Download PDF
+                    </a>
+                    <button id="fullscreen-btn" class="btn-fullscreen">
+                        <i class="fas fa-expand"></i> Fullscreen
+                    </button>
+                </div>
+                <div class="resume-viewer" id="resume-viewer">
+                    <iframe 
+                        src="assets/Kaloyan Draganov Resume.pdf" 
+                        type="application/pdf"
+                        width="100%" 
+                        height="800px"
+                        id="resume-iframe">
+                        <p>Your browser does not support PDFs. 
+                           <a href="assets/Kaloyan Draganov Resume.pdf">Download the PDF</a> instead.
+                        </p>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Get In Touch</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <p class="contact-description">
+                        I'm actively seeking my first co-op opportunity in robotics, automation, or embedded systems.
+                        Reach out if you'd like to discuss opportunities, projects, or just connect!
+                    </p>
+                    <!-- <div class="contact-methods">
+                        <a href="mailto:kaloyan@draganov.com" class="contact-method">
+                            <i class="fas fa-envelope"></i>
+                            <span>kaloyan@draganov.com</span>
+                        </a>
+                        <a href="https://linkedin.com/in/kaloyan-draganov-081567155/" target="_blank" class="contact-method">
+                            <i class="fab fa-linkedin-in"></i>
+                            <span>LinkedIn</span>
+                        </a>
+                        <a href="https://github.com/kkdraganov" target="_blank" class="contact-method">
+                            <i class="fab fa-github"></i>
+                            <span>GitHub</span>
+                        </a>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <!-- <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Kaloyan Draganov. All rights reserved.</p>
+        </div>
+    </footer> -->
+
+    <script src="script.js"></script>
+</body>
+</html>

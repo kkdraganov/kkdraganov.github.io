@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const navMenu = document.querySelector('.nav-menu');
     const navSocial = document.querySelector('.nav-social');
     const navLinks = document.querySelectorAll('.nav-link');
+    const navbar = document.querySelector('.navbar');
+    const pageSections = document.querySelectorAll('section');
+    const heroImage = document.querySelector('.hero-image');
+    const heroText = document.querySelector('.hero-text');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // Toggle mobile menu
     hamburger.addEventListener('click', function() {
@@ -21,57 +26,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Smooth scrolling for navigation links
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-
-            if (targetSection) {
-                const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
-                window.scrollTo({
-                    top: offsetTop,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-
-    // Enhanced navbar background on scroll
-    let navbarTicking = false;
-
+    // Keep all scroll-driven updates in a single animation frame.
+    let scrollTicking = false;
+    let activeSection = '';
     function updateNavbar() {
-        const navbar = document.querySelector('.navbar');
-        const scrollY = window.scrollY;
-
-        if (scrollY > 100) {
-            navbar.style.background = 'rgba(10, 26, 26, 0.98)';
-            navbar.style.backdropFilter = 'blur(15px)';
-            navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
-        } else {
-            navbar.style.background = 'rgba(10, 26, 26, 0.95)';
-            navbar.style.backdropFilter = 'blur(10px)';
-            navbar.style.boxShadow = 'none';
-        }
-
-        navbarTicking = false;
+        navbar.classList.toggle('navbar-scrolled', window.scrollY > 100);
     }
 
-    window.addEventListener('scroll', function() {
-        if (!navbarTicking) {
-            requestAnimationFrame(updateNavbar);
-            navbarTicking = true;
-        }
-    });
-
     // Active navigation link highlighting
-    window.addEventListener('scroll', function() {
-        const sections = document.querySelectorAll('section');
-        const navLinks = document.querySelectorAll('.nav-link');
-
+    function updateActiveNav() {
         let current = '';
-        sections.forEach(section => {
+        pageSections.forEach(section => {
             const sectionTop = section.offsetTop - 100;
             const sectionHeight = section.clientHeight;
             if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
@@ -79,21 +44,56 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        if (current === activeSection) return;
+        activeSection = current;
         navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
-            }
+            link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
         });
-    });
+    }
+
+    function updateParallax() {
+        if (reduceMotion || window.scrollY >= window.innerHeight) return;
+
+        const rate = window.scrollY * -0.3;
+        const opacity = 1 - (window.scrollY / window.innerHeight) * 0.5;
+        heroImage.style.transform = `translateY(${rate}px)`;
+        heroText.style.transform = `translateY(${rate * 0.5}px)`;
+
+        if (window.scrollY > 100) {
+            heroImage.style.opacity = Math.max(opacity, 0.3);
+            heroText.style.opacity = Math.max(opacity, 0.3);
+        }
+    }
+
+    function updateOnScroll() {
+        updateNavbar();
+        updateActiveNav();
+        updateParallax();
+        scrollTicking = false;
+    }
+
+    window.addEventListener('scroll', function() {
+        if (!scrollTicking) {
+            requestAnimationFrame(updateOnScroll);
+            scrollTicking = true;
+        }
+    }, { passive: true });
+
+    updateOnScroll();
 
     // Resume fullscreen functionality
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     const resumeViewer = document.getElementById('resume-viewer');
     const resumeIframe = document.getElementById('resume-iframe');
+    const loadResume = () => {
+        if (resumeIframe && !resumeIframe.getAttribute('src')) {
+            resumeIframe.src = resumeIframe.dataset.src;
+        }
+    };
 
     if (fullscreenBtn && resumeViewer) {
         fullscreenBtn.addEventListener('click', function() {
+            loadResume();
             if (!document.fullscreenElement) {
                 // Enter fullscreen
                 if (resumeViewer.requestFullscreen) {
@@ -156,31 +156,29 @@ document.addEventListener('DOMContentLoaded', function() {
         rootMargin: '0px 0px -80px 0px'
     };
 
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach((entry, index) => {
-            if (entry.isIntersecting) {
-                // Add staggered animation delay
-                setTimeout(() => {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                    entry.target.classList.add('animate-fade-in-up');
-                }, index * 100);
-            }
-        });
-    }, observerOptions);
-
     // Observe sections for animation (excluding hero)
     const sections = document.querySelectorAll('section:not(.hero)');
-    sections.forEach(section => {
-        section.style.opacity = '0';
-        section.style.transform = 'translateY(40px)';
-        section.style.transition = 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-        observer.observe(section);
-    });
+    if (!reduceMotion) {
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('animate-fade-in-up');
+                    }, index * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            section.classList.add('reveal-section');
+            observer.observe(section);
+        });
+    }
 
     // Enhanced typing effect for hero title
     const heroTitle = document.querySelector('.hero-title');
-    if (heroTitle) {
+    if (heroTitle && !reduceMotion) {
         const originalText = heroTitle.textContent;
         heroTitle.textContent = '';
         heroTitle.style.borderRight = '3px solid #00d4aa';
@@ -205,42 +203,10 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(typeWriter, 1500);
     }
 
-    // Enhanced parallax effect for hero section
-    let ticking = false;
-
-    function updateParallax() {
-        const scrolled = window.pageYOffset;
-        const heroImage = document.querySelector('.hero-image');
-        const heroText = document.querySelector('.hero-text');
-
-        if (heroImage && heroText && scrolled < window.innerHeight) {
-            const rate = scrolled * -0.3;
-            const opacity = 1 - (scrolled / window.innerHeight) * 0.5;
-
-            heroImage.style.transform = `translateY(${rate}px)`;
-            heroText.style.transform = `translateY(${rate * 0.5}px)`;
-
-            // Fade out hero content as user scrolls
-            if (scrolled > 100) {
-                heroImage.style.opacity = Math.max(opacity, 0.3);
-                heroText.style.opacity = Math.max(opacity, 0.3);
-            }
-        }
-
-        ticking = false;
-    }
-
-    window.addEventListener('scroll', function() {
-        if (!ticking) {
-            requestAnimationFrame(updateParallax);
-            ticking = true;
-        }
-    });
-
-
         // Background particles + floating geometric shapes (motion-aware)
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (!reduceMotion) {
+        const lowPowerMode = window.matchMedia('(prefers-reduced-data: reduce)').matches;
+        const saveData = navigator.connection && navigator.connection.saveData;
+        if (!reduceMotion && !lowPowerMode && !saveData) {
             const canvas = document.createElement('canvas');
             canvas.id = 'bg-particles';
             Object.assign(canvas.style, {
@@ -254,6 +220,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const ctx = canvas.getContext('2d');
             let particles = [];
             let shapes = [];
+            let animationFrameId = null;
+            let resizeTicking = false;
+            let lastFrameTime = 0;
+            const frameInterval = 1000 / 30;
 
             const palette = {
                 fill: 'rgba(0, 212, 170, 0.08)',
@@ -305,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             function resize() {
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
                 const w = Math.floor(window.innerWidth * dpr);
                 const h = Math.floor(window.innerHeight * dpr);
                 canvas.width = w;
@@ -414,7 +384,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            function step() {
+            function step(timestamp) {
+                if (timestamp - lastFrameTime < frameInterval) {
+                    animationFrameId = requestAnimationFrame(step);
+                    return;
+                }
+                lastFrameTime = timestamp;
+
                 ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
                 // background drift particles
@@ -464,62 +440,89 @@ document.addEventListener('DOMContentLoaded', function() {
                     ctx.restore();
                 }
 
-                requestAnimationFrame(step);
+                animationFrameId = requestAnimationFrame(step);
             }
 
-            window.addEventListener('resize', resize);
+            function startAnimation() {
+                if (animationFrameId === null && !document.hidden) {
+                    animationFrameId = requestAnimationFrame(step);
+                }
+            }
+
+            function stopAnimation() {
+                if (animationFrameId !== null) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+            }
+
+            window.addEventListener('resize', function() {
+                if (!resizeTicking) {
+                    requestAnimationFrame(() => {
+                        resize();
+                        resizeTicking = false;
+                    });
+                    resizeTicking = true;
+                }
+            }, { passive: true });
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    stopAnimation();
+                } else {
+                    startAnimation();
+                }
+            });
+
             resize();
-            requestAnimationFrame(step);
+            startAnimation();
         }
 
     // Enhanced skill tag animations
-    const skillTagObserver = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const skillTags = entry.target.querySelectorAll('.skill-tag');
-                skillTags.forEach((tag, index) => {
-                    setTimeout(() => {
-                        tag.style.opacity = '1';
-                        tag.style.transform = 'translateY(0) scale(1)';
-                        tag.classList.add('animate-scale-in');
-                    }, index * 80);
-                });
-            }
-        });
-    }, { threshold: 0.3 });
-
     const skillsSection = document.querySelector('.skills');
-    if (skillsSection) {
+    if (skillsSection && !reduceMotion) {
+        const skillTagObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const skillTags = entry.target.querySelectorAll('.skill-tag');
+                    skillTags.forEach((tag, index) => {
+                        setTimeout(() => {
+                            tag.classList.add('animate-scale-in');
+                        }, index * 80);
+                    });
+                    skillTagObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
         const skillTags = skillsSection.querySelectorAll('.skill-tag');
         skillTags.forEach(tag => {
-            tag.style.opacity = '0';
-            tag.style.transform = 'translateY(20px) scale(0.9)';
-            tag.style.transition = 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            tag.classList.add('reveal-skill');
         });
 
         skillTagObserver.observe(skillsSection);
     }
 
-    // Contact method hover effects
-    const contactMethods = document.querySelectorAll('.contact-method');
-    contactMethods.forEach(method => {
-        method.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px) scale(1.02)';
-        });
+    // Lazy load PDF iframe
+    const resumeSection = document.getElementById('resume');
 
-        method.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(-2px) scale(1)';
-        });
-    });
+    if (resumeSection && resumeIframe) {
+        const pdfObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadResume();
+                    pdfObserver.unobserve(entry.target);
+                }
+            });
+        }, { rootMargin: '200px 0px' });
 
-    // PDF loading fallback
-    const iframe = document.getElementById('resume-iframe');
-    if (iframe) {
-        iframe.addEventListener('load', function() {
+        pdfObserver.observe(resumeSection);
+
+        resumeIframe.addEventListener('load', function() {
             console.log('Resume PDF loaded successfully');
         });
 
-        iframe.addEventListener('error', function() {
+        resumeIframe.addEventListener('error', function() {
             console.error('Error loading PDF');
             const fallbackMessage = document.createElement('div');
             fallbackMessage.innerHTML = `
@@ -533,21 +536,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     </a>
                 </div>
             `;
-            iframe.parentNode.replaceChild(fallbackMessage, iframe);
+            resumeIframe.parentNode.replaceChild(fallbackMessage, resumeIframe);
         });
     }
 });
-
-// Utility function to check if element is in viewport
-function isInViewport(element) {
-    const rect = element.getBoundingClientRect();
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-}
 
 // Add loading animation
 window.addEventListener('load', function() {

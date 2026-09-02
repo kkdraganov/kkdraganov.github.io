@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kaloyan Draganov</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 </head>
 <body>
     <!-- Navigation -->
@@ -45,7 +48,7 @@
         <div class="hero-container">
             <div class="hero-content">
                 <div class="hero-image">
-                    <img src="assets/Profile.jpg" alt="Kaloyan Draganov" class="profile-img">
+                    <img src="assets/Profile.jpg" alt="Kaloyan Draganov" class="profile-img" width="540" height="540" decoding="async" fetchpriority="high">
                     <div class="image-overlay"></div>
                 </div>
                 <div class="hero-text">
@@ -132,13 +135,14 @@
                     </button>
                 </div>
                 <div class="resume-viewer" id="resume-viewer">
-                    <iframe 
-                        src="assets/Kaloyan Draganov Resume.pdf" 
+                    <iframe
+                        data-src="assets/Kaloyan Draganov Resume.pdf"
                         type="application/pdf"
-                        width="100%" 
+                        width="100%"
                         height="800px"
-                        id="resume-iframe">
-                        <p>Your browser does not support PDFs. 
+                        id="resume-iframe"
+                        loading="lazy">
+                        <p>Your browser does not support PDFs.
                            <a href="assets/Kaloyan Draganov Resume.pdf">Download the PDF</a> instead.
                         </p>
                     </iframe>
@@ -186,6 +190,6 @@
         </div>
     </footer> -->
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>

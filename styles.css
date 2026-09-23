@@ -562,6 +562,13 @@ body {
     line-height: 1.7;
 }
 
+.contact-social {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
 .contact-methods {
     display: flex;
     flex-direction: column;
